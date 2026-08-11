@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Arabische Verbkonjugation – Hand-Trainer</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#3C311E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Morphologie">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1E8D3; --bg-blob:#D8DFAE;
+    --card:#FBF4E3; --border:#E4D3A7;
+    --text:#332711; --text-dim:#8C7B54;
+    --dark:#3C311E; --dark2:#211809; --dark-text:#F5EACC;
+    --tan:#E7D8AC; --tan2:#D8C48C;
+    --gold:#BD9142; --gold-light:#E3C271; --gold-text:#4A3510;
+    --green:#748456; --green-bg:#E3E8CE; --green-text:#2C3418;
+    --red:#B5552F; --red-bg:#F2DCCB; --red-text:#4A2311;
+    --shadow: 0 14px 34px -16px rgba(60,42,10,.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1A140A; --bg-blob:#2B2E17;
+      --card:#241C10; --border:#3B2E17;
+      --text:#F1E4C6; --text-dim:#AC9968;
+      --dark:#120D06; --dark2:#000000; --dark-text:#F1E4C6;
+      --tan:#332816; --tan2:#42341C;
+      --gold:#D9AE5C; --gold-light:#EDCB82; --gold-text:#2A1D08;
+      --green:#8BA05E; --green-bg:#26301A; --green-text:#E4EBD2;
+      --red:#CC7148; --red-bg:#3A2216; --red-text:#F5DFCE;
+      --shadow: 0 14px 34px -16px rgba(0,0,0,.6);
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 100% -10%, var(--bg-blob) 0%, transparent 42%),
+      radial-gradient(circle at -10% 30%, var(--bg-blob) 0%, transparent 38%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh; padding:18px; padding-bottom:60px;
+  }
+  .ar{ font-family:'Noto Naskh Arabic','Amiri','Traditional Arabic',serif; direction:rtl; unicode-bidi:isolate; }
+  .wrap{ max-width:760px; margin:0 auto; }
+  header{ text-align:center; margin-bottom:16px; }
+  header h1{ font-size:1.35rem; margin:0 0 4px; font-weight:800; letter-spacing:.01em; }
+  header p{ margin:0; color:var(--text-dim); font-size:.85rem; font-weight:500; }
+
+  .panel{ background:var(--card); border:1px solid var(--border); border-radius:24px; padding:16px 18px; margin-bottom:14px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+  .panel h2{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin:0 0 10px; font-weight:700; }
+
+  /* decorative corner ornament for dark hero cards */
+  .hero::before{
+    content:""; position:absolute; top:14px; inset-inline-end:14px; width:34px; height:34px; opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23E3C271' stroke-width='1.4'%3E%3Cpath d='M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16 Z'/%3E%3Ccircle cx='20' cy='20' r='5'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:contain; background-repeat:no-repeat; pointer-events:none;
+  }
+  .hero::after{
+    content:""; position:absolute; bottom:-30px; inset-inline-start:-30px; width:120px; height:120px; opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23F5EACC' stroke-width='1.2'%3E%3Cpath d='M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16 Z'/%3E%3Ccircle cx='20' cy='20' r='9'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:contain; background-repeat:no-repeat; pointer-events:none;
+  }
+
+  .row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .row + .row{ margin-top:10px; }
+
+  .seg{ display:inline-flex; background:var(--tan); border:1px solid var(--border); border-radius:14px; padding:4px; gap:2px; }
+  .seg button{
+    border:none; background:transparent; color:var(--text-dim); padding:8px 14px; border-radius:11px;
+    font-family:inherit; font-size:.83rem; cursor:pointer; font-weight:600; transition:.15s;
+  }
+  .seg button.active{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); box-shadow:0 4px 10px -4px rgba(150,110,20,.5); }
+  .seg button:hover:not(.active){ color:var(--text); }
+
+  .chip-toggle{ display:inline-flex; align-items:center; gap:7px; background:var(--tan); border:1px solid var(--border);
+    border-radius:14px; padding:9px 14px; cursor:pointer; font-size:.83rem; font-weight:600; color:var(--text-dim); user-select:none; }
+  .chip-toggle input{ accent-color:var(--gold); width:15px; height:15px; }
+  .chip-toggle.on{ color:var(--gold-text); border-color:var(--gold); background:var(--gold-light); }
+
+  .babfilter{ display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; width:100%; }
+  .babfilter label{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--tan); border:1px solid var(--border);
+    border-radius:14px; padding:10px 4px; font-size:.75rem; font-weight:700; cursor:pointer; color:var(--text-dim); text-align:center; position:relative; }
+  .babfilter label.on{ color:var(--gold-text); border-color:var(--gold); background:linear-gradient(160deg, var(--gold-light), var(--tan2)); }
+  .babfilter input{ position:absolute; opacity:0; width:1px; height:1px; }
+  @media (max-width:480px){ .babfilter{ grid-template-columns:repeat(3, 1fr); } }
+
+  select{
+    background:var(--tan); color:var(--text); border:1px solid var(--border); border-radius:12px;
+    font-family:inherit; padding:9px 11px; font-size:.85rem; max-width:100%;
+  }
+  .verbcard select{ background:rgba(245,234,204,.14); color:var(--dark-text); border-color:rgba(245,234,204,.25); }
+  /* Die Dropdown-Liste selbst wird vom Betriebssystem gerendert (heller Hintergrund) -
+     Optionen deshalb IMMER dunkel auf hell, unabhaengig vom (dunklen) Feld-Stil. */
+  select option{ background:#FBF4E3; color:#332711; }
+
+  .btn{ border:none; border-radius:13px; padding:10px 17px; font-family:inherit; font-size:.85rem; font-weight:700; cursor:pointer; }
+  .btn-accent{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); box-shadow:0 6px 16px -6px rgba(150,110,20,.6); }
+  .btn-ghost{ background:var(--tan); color:var(--text); border:1px solid var(--border); }
+  .btn:active{ transform:scale(.97); }
+  .btn:disabled{ opacity:.4; cursor:default; }
+
+  /* Verb hero card */
+  .verbcard.hero{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    background:linear-gradient(150deg, var(--dark), var(--dark2)); border-color:var(--dark2); }
+  .verbcard .info{ flex:1; min-width:0; }
+  .verbcard .ar-verb{ font-size:1.7rem; font-weight:600; color:var(--gold-light); }
+  .verbcard .de-verb{ color:var(--dark-text); opacity:.7; font-size:.85rem; margin-top:3px; }
+  .verbcard .babtag{ display:inline-block; background:rgba(227,194,113,.16); border:1px solid rgba(227,194,113,.4); border-radius:8px;
+    padding:2px 9px; font-size:.68rem; font-weight:700; color:var(--gold-light); margin-inline-start:8px; vertical-align:middle; white-space:nowrap; }
+
+  /* nav bar for verb navigation */
+  .navbar{ justify-content:center; background:linear-gradient(150deg, var(--dark), var(--dark2)); border-radius:18px; padding:8px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .navbar .btn{ background:transparent; color:var(--dark-text); opacity:.8; font-size:.8rem; }
+  .navbar .btn:hover{ opacity:1; background:rgba(245,234,204,.08); }
+
+  .stats{ display:flex; gap:16px; font-size:.8rem; color:var(--text-dim); font-weight:500; }
+  .stats b{ color:var(--text); }
+
+  .progress{ display:flex; justify-content:center; gap:5px; margin-top:16px; flex-wrap:wrap; }
+  .dot{ width:11px; height:11px; border-radius:50%; background:var(--tan); border:1px solid var(--border); }
+  .dot.correct{ background:var(--green); border-color:var(--green); }
+  .dot.incorrect{ background:var(--red); border-color:var(--red); }
+  .dot.current{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(189,145,66,.25); }
+
+  /* Konjugationstabelle */
+  .tablewrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:2px 0; }
+  .conjtable{ border-collapse:collapse; width:100%; min-width:460px; margin:0 auto; }
+  .conjtable th, .conjtable td{ border:1px solid var(--border); text-align:center; }
+  .conjtable thead th{ background:var(--tan); color:var(--gold); font-weight:700; font-size:.95rem; padding:8px 4px; }
+  .conjtable thead th.cornercell{ background:transparent; border:none; }
+  .conjtable thead th .sub{ display:block; font-size:.6rem; font-weight:600; color:var(--text-dim); margin-top:1px; direction:ltr; font-family:'Poppins',sans-serif; }
+  .conjtable thead .gendercell{ font-size:.85rem; padding:5px 4px; }
+  .conjtable tbody th.rowlabel{ background:var(--tan); color:var(--gold); font-weight:700; font-size:.85rem; padding:6px 8px; white-space:nowrap; }
+  .conjtable tbody th.rowlabel .sub{ display:block; font-size:.6rem; font-weight:600; color:var(--text-dim); direction:ltr; font-family:'Poppins',sans-serif; }
+  .conjtable td.cell{ background:var(--card); font-size:1.5rem; font-weight:600; padding:14px 4px; color:var(--text); transition:background .2s,color .2s; }
+  .conjtable td.cell.current{ background:var(--gold-light); color:var(--gold-text); box-shadow:inset 0 0 0 2px var(--gold); }
+  .conjtable td.cell.correct{ background:var(--green-bg); color:var(--green-text); }
+  .conjtable td.cell.incorrect{ background:var(--red-bg); color:var(--red-text); }
+  @media (max-width:480px){
+    .conjtable{ min-width:420px; }
+    .conjtable td.cell{ font-size:1.2rem; padding:10px 2px; }
+  }
+
+  /* Quiz card */
+  .quizcard{ text-align:center; padding:26px 18px 22px;
+    background:linear-gradient(150deg, var(--dark), var(--dark2)); border-color:var(--dark2); color:var(--dark-text); }
+  .prompt{ font-size:1.02rem; color:var(--dark-text); margin-bottom:4px; line-height:1.5; }
+  .prompt .who-ar{ font-size:1.3rem; margin-inline-end:6px; color:var(--gold-light); }
+  .prompt .who-de{ color:var(--dark-text); opacity:.65; font-size:.85rem; }
+  .modebadges{ display:flex; justify-content:center; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+  .badge{ font-size:.65rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:var(--gold-light);
+    background:rgba(227,194,113,.14); border:1px solid rgba(227,194,113,.35); border-radius:7px; padding:3px 8px; }
+
+  .answerzone{ min-height:130px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
+  .reveal-btn{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); border:none; border-radius:16px; padding:16px 32px; font-family:inherit; font-size:1rem;
+    font-weight:700; cursor:pointer; box-shadow:0 10px 22px -8px rgba(0,0,0,.4); }
+  .reveal-btn.secondary{ background:linear-gradient(135deg, var(--tan2), var(--tan)); color:var(--dark); }
+  .answer-ar{ font-size:2.2rem; font-weight:700; color:var(--gold-light); }
+  .answer-sub{ color:var(--dark-text); opacity:.75; font-size:.85rem; }
+  .dict-form{ font-size:1.6rem; font-weight:600; margin-bottom:2px; color:var(--gold-light); }
+  .dict-hint{ color:var(--dark-text); opacity:.6; font-size:.8rem; }
+
+  .gradebtns{ display:flex; gap:12px; margin-top:6px; }
+  .gradebtn{ border:none; border-radius:16px; padding:13px 28px; font-family:inherit; font-size:.95rem; font-weight:700; cursor:pointer; min-width:120px; }
+  .gradebtn.ok{ background:var(--green); color:var(--green-text); }
+  .gradebtn.no{ background:var(--red); color:var(--red-text); }
+
+
+  .summary{ text-align:center; padding:10px 6px; }
+  .summary .score{ font-size:2.4rem; font-weight:800; margin:6px 0; color:var(--dark-text); }
+  .summary .score .ok{ color:var(--green); filter:brightness(1.3); }
+  .summary .score .sep{ color:var(--dark-text); opacity:.5; font-weight:400; }
+  .summary .score .no{ color:var(--red); }
+  .summary-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+  .summary .btn-ghost{ background:rgba(245,234,204,.12); color:var(--dark-text); border-color:rgba(245,234,204,.25); }
+
+
+  @media (max-width:480px){
+    .verbcard .ar-verb{ font-size:1.3rem; }
+    .answer-ar{ font-size:1.8rem; }
+    .dict-form{ font-size:1.3rem; }
+    .verbcard.hero{ flex-direction:column; align-items:stretch; }
+    .verbcard.hero select{ width:100%; }
+    .navbar{ flex-wrap:nowrap; }
+    .navbar .btn{ padding:10px 8px; font-size:.72rem; flex:1; text-align:center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🖐️ Arabische Morphologie</h1>
+  </header>
+
+  <div class="panel" id="settingsPanel">
+    <h2>Einstellungen</h2>
+    <div class="row">
+      <div class="seg" id="tenseSeg">
+        <button data-val="past">Vergangenheit</button>
+        <button data-val="present">Gegenwart</button>
+      </div>
+      <div class="seg" id="voiceSeg">
+        <button data-val="active">Aktiv</button>
+        <button data-val="passive">Passiv</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="seg" id="orderSeg">
+        <button data-val="sequential">Stufe 1 · Reihenfolge</button>
+        <button data-val="random">Stufe 2 · Kreuz &amp; quer</button>
+      </div>
+      <label class="chip-toggle" id="vocabToggle">
+        <input type="checkbox" id="vocabCheckbox"> Vokabel-Modus
+      </label>
+    </div>
+    <div class="row">
+      <div class="babfilter" id="babFilter"></div>
+    </div>
+  </div>
+
+  <div class="panel verbcard hero">
+    <div class="info">
+      <span class="ar-verb ar" id="verbAr">–</span>
+      <span class="babtag" id="verbBabTag"></span>
+      <div class="de-verb" id="verbDe">–</div>
+    </div>
+    <select id="verbSelect"></select>
+  </div>
+
+  <div class="row navbar" style="margin-bottom:14px;">
+    <button class="btn" id="btnPrevVerb">← Vorheriges</button>
+    <button class="btn" id="btnRandomVerb">🔀 Zufällig</button>
+    <button class="btn" id="btnNextVerb">Nächstes →</button>
+  </div>
+
+  <div class="panel">
+    <div class="tablewrap" id="tableWrap"></div>
+    <div class="progress" id="progressDots"></div>
+  </div>
+
+  <div class="panel quizcard hero" id="quizPanel"></div>
+
+  <div class="row" style="justify-content:space-between;">
+    <div class="stats">
+      <span>Sitzung: <b id="statCorrect">0</b> richtig / <b id="statIncorrect">0</b> falsch</span>
+    </div>
+    <button class="btn btn-ghost" id="btnResetStats">Statistik zurücksetzen</button>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   1) VERB-DATENBANK  (Kitāb Al-Bināʾ, Bāb 1–6, gesunde Verben)
+   [ Vergangenheit(3.m.Sg.), Gegenwart(3.m.Sg.), Bāb, Bedeutung ]
+========================================================= */
+const RAW_VERBS = [
+// Bāb 1 — فَعَلَ يَفْعُلُ (fatḥa / ḍamma)
+["عَبَدَ","يَعْبُدُ",1,"anbeten"],
+["كَفَرَ","يَكْفُرُ",1,"nicht glauben (an); undankbar sein"],
+["خَلَقَ","يَخْلُقُ",1,"schöpfen, erschaffen"],
+["أَخَذَ","يَأْخُذُ",1,"nehmen; ergreifen"],
+["نَظَرَ","يَنْظُرُ",1,"schauen (zu)"],
+["قَتَلَ","يَقْتُلُ",1,"töten, morden"],
+["أَمَرَ","يَأْمُرُ",1,"befehlen"],
+["نَصَرَ","يَنْصُرُ",1,"unterstützen, helfen"],
+["دَخَلَ","يَدْخُلُ",1,"eintreten"],
+["خَرَجَ","يَخْرُجُ",1,"austreten"],
+["حَكَمَ","يَحْكُمُ",1,"urteilen"],
+["بَلَغَ","يَبْلُغُ",1,"erreichen"],
+["تَرَكَ","يَتْرُكُ",1,"verlassen"],
+["ذَكَرَ","يَذْكُرُ",1,"erwähnen; gedenken; sich erinnern"],
+["رَزَقَ","يَرْزُقُ",1,"versorgen"],
+["شَكَرَ","يَشْكُرُ",1,"danken"],
+["صَدَقَ","يَصْدُقُ",1,"die Wahrheit sprechen"],
+["سَكَنَ","يَسْكُنُ",1,"ruhig/still sein; wohnen"],
+["بَسَطَ","يَبْسُطُ",1,"ausbreiten"],
+["أَكَلَ","يَأْكُلُ",1,"essen"],
+["حَشَرَ","يَحْشُرُ",1,"versammeln"],
+["سَجَدَ","يَسْجُدُ",1,"sich niederwerfen"],
+["مَكَرَ","يَمْكُرُ",1,"eine List schmieden"],
+["طَلَبَ","يَطْلُبُ",1,"fordern, verlangen"],
+["زَعَمَ","يَزْعُمُ",1,"behaupten"],
+["سَلَكَ","يَسْلُكُ",1,"beschreiten (einen Weg)"],
+["قَعَدَ","يَقْعُدُ",1,"sitzen"],
+["كَتَبَ","يَكْتُبُ",1,"schreiben; vorschreiben"],
+["كَتَمَ","يَكْتُمُ",1,"verschweigen"],
+// Bāb 2 — فَعَلَ يَفْعِلُ (fatḥa / kasra)
+["غَفَرَ","يَغْفِرُ",2,"vergeben"],
+["ظَلَمَ","يَظْلِمُ",2,"Unrecht tun, unterdrücken"],
+["قَدَرَ","يَقْدِرُ",2,"können; Macht haben (über)"],
+["عَرَفَ","يَعْرِفُ",2,"kennen, wissen"],
+["رَجَعَ","يَرْجِعُ",2,"zurückkehren"],
+["حَمَلَ","يَحْمِلُ",2,"tragen; auftragen"],
+["كَذَبَ","يَكْذِبُ",2,"lügen; belügen"],
+["كَسَبَ","يَكْسِبُ",2,"erwerben, verdienen"],
+["سَبَقَ","يَسْبِقُ",2,"zuvorkommen"],
+["عَقَلَ","يَعْقِلُ",2,"vernünftig nachdenken; Verstand haben"],
+["نَكَحَ","يَنْكِحُ",2,"heiraten"],
+["فَصَلَ","يَفْصِلُ",2,"trennen"],
+["نَزَلَ","يَنْزِلُ",2,"sich niederlassen; herabkommen"],
+["قَبَضَ","يَقْبِضُ",2,"ergreifen, festhalten"],
+["صَبَرَ","يَصْبِرُ",2,"sich gedulden; aushalten"],
+["نَزَعَ","يَنْزِعُ",2,"entreißen"],
+["ضَرَبَ","يَضْرِبُ",2,"schlagen; prägen (ein Gleichnis)"],
+["فَرَضَ","يَفْرِضُ",2,"verpflichten"],
+["غَلَبَ","يَغْلِبُ",2,"(be)siegen"],
+["صَرَفَ","يَصْرِفُ",2,"abwenden"],
+["حَلَفَ","يَحْلِفُ",2,"schwören"],
+["حَلَقَ","يَحْلِقُ",2,"rasieren"],
+["عَدَلَ","يَعْدِلُ",2,"gerecht handeln; verzichten"],
+["جَلَسَ","يَجْلِسُ",2,"sitzen, sich setzen"],
+["نَبَذَ","يَنْبِذُ",2,"wegwerfen; sich abwenden"],
+["وَعَظَ","يَعِظُ",2,"ermahnen"],
+["وَصَلَ","يَصِلُ",2,"ankommen (bei); verbinden"],
+["وَجَدَ","يَجِدُ",2,"finden"],
+["وَلَدَ","يَلِدُ",2,"gebären"],
+["وَصَفَ","يَصِفُ",2,"beschreiben, zuschreiben"],
+["وَعَدَ","يَعِدُ",2,"versprechen"],
+// Bāb 3 — فَعَلَ يَفْعَلُ (fatḥa / fatḥa)
+["فَعَلَ","يَفْعَلُ",3,"machen, tun"],
+["جَعَلَ","يَجْعَلُ",3,"machen (jdn/etw zu etw)"],
+["صَنَعَ","يَصْنَعُ",3,"machen, tun; herstellen"],
+["ذَهَبَ","يَذْهَبُ",3,"gehen; wegnehmen"],
+["فَتَحَ","يَفْتَحُ",3,"(er)öffnen; erobern"],
+["قَرَأَ","يَقْرَأُ",3,"rezitieren, (vor)lesen; sammeln"],
+["رَكَعَ","يَرْكَعُ",3,"sich verbeugen"],
+["سَأَلَ","يَسْأَلُ",3,"fragen; bitten"],
+["نَفَعَ","يَنْفَعُ",3,"nützen, nützlich sein"],
+["شَفَعَ","يَشْفَعُ",3,"Fürsprache einlegen"],
+["لَعَنَ","يَلْعَنُ",3,"verfluchen"],
+["جَمَعَ","يَجْمَعُ",3,"sammeln"],
+["قَطَعَ","يَقْطَعُ",3,"schneiden"],
+["جَحَدَ","يَجْحَدُ",3,"leugnen; verweigern"],
+["مَنَعَ","يَمْنَعُ",3,"verhindern, behindern"],
+["رَفَعَ","يَرْفَعُ",3,"(er)heben, emporheben"],
+["دَفَعَ","يَدْفَعُ",3,"wegstoßen; bekämpfen; widerlegen; zahlen"],
+["نَفَخَ","يَنْفَخُ",3,"blasen, pusten, hauchen"],
+["بَدَأَ","يَبْدَأُ",3,"beginnen"],
+["مَلَأَ","يَمْلَأُ",3,"füllen"],
+["بَعَثَ","يَبْعَثُ",3,"schicken, entsenden; wiedererwecken"],
+["وَضَعَ","يَضَعُ",3,"legen"],
+["وَدَعَ","يَدَعُ",3,"verabschieden; lassen"],
+["وَهَبَ","يَهَبُ",3,"schenken; geben"],
+// Bāb 4 — فَعِلَ يَفْعَلُ (kasra / fatḥa)
+["عَلِمَ","يَعْلَمُ",4,"wissen"],
+["عَمِلَ","يَعْمَلُ",4,"machen, handeln; arbeiten"],
+["سَمِعَ","يَسْمَعُ",4,"hören"],
+["حَسِبَ","يَحْسَبُ",4,"denken, meinen"],
+["شَهِدَ","يَشْهَدُ",4,"bezeugen"],
+["كَرِهَ","يَكْرَهُ",4,"hassen"],
+["رَحِمَ","يَرْحَمُ",4,"sich erbarmen"],
+["حَزِنَ","يَحْزَنُ",4,"traurig sein"],
+["فَرِحَ","يَفْرَحُ",4,"sich freuen"],
+["خَسِرَ","يَخْسَرُ",4,"verlieren"],
+["قَبِلَ","يَقْبَلُ",4,"annehmen, akzeptieren"],
+["شَرِبَ","يَشْرَبُ",4,"trinken"],
+["فَقِهَ","يَفْقَهُ",4,"verstehen"],
+["لَبِثَ","يَلْبَثُ",4,"bleiben, verweilen"],
+["أَذِنَ","يَأْذَنُ",4,"erlauben"],
+["أَمِنَ","يَأْمَنُ",4,"sich sicher fühlen; anvertrauen"],
+["أَثِمَ","يَأْثَمُ",4,"sündigen"],
+["تَبِعَ","يَتْبَعُ",4,"(nach)folgen"],
+["حَذِرَ","يَحْذَرُ",4,"warnen, ermahnen"],
+["حَمِدَ","يَحْمَدُ",4,"lobpreisen"],
+["حَبِطَ","يَحْبَطُ",4,"zunichte werden, verloren sein"],
+// Bāb 5 — فَعُلَ يَفْعُلُ (ḍamma / ḍamma)
+["حَسُنَ","يَحْسُنُ",5,"gut sein/werden"],
+["شَعُرَ","يَشْعُرُ",5,"fühlen"],
+["كَبُرَ","يَكْبُرُ",5,"groß sein/werden"],
+["كَثُرَ","يَكْثُرُ",5,"viel sein; sich vermehren"],
+// Bāb 6 — فَعِلَ يَفْعِلُ (kasra / kasra)
+["وَرِثَ","يَرِثُ",6,"(be)erben"],
+];
+
+const VERBS = RAW_VERBS.map((v,i)=>({ id:i, past:v[0], pres:v[1], bab:v[2], de:v[3] }));
+
+function shortMeaning(de){ return de.split(/[;,(]/)[0].trim(); }
+
+/* =========================================================
+   2) KONJUGATIONS-ENGINE
+========================================================= */
+const FATHA='َ', DAMMA='ُ', KASRA='ِ', SUKUN='ْ';
+const DIACRITICS = /[ً-ْ]/;
+
+function stripTrailingDiacritics(s){
+  let i=s.length-1;
+  while(i>=0 && DIACRITICS.test(s[i])) i--;
+  return s.slice(0,i+1);
+}
+function stripAllDiacritics(s){ return s.replace(/[ً-ْ]/g,''); }
+function getRoot(verb){ return [...stripAllDiacritics(verb.past)]; }
+function getPastActiveStem(verb){ return stripTrailingDiacritics(verb.past); }
+function getPresentActiveStem(verb){ return stripTrailingDiacritics(verb.pres).slice(2); } // drop leading يَ
+
+const PAST_SUFFIX = {
+  '3ms': FATHA,
+  '3md': FATHA+'ا',
+  '3mp': DAMMA+'وا',
+  '3fs': FATHA+'تْ',
+  '3fd': FATHA+'تَا',
+  '3fp': SUKUN+'نَ',
+  '2ms': SUKUN+'تَ',
+  '2md': SUKUN+'تُمَا',
+  '2mp': SUKUN+'تُمْ',
+  '2fs': SUKUN+'تِ',
+  '2fd': SUKUN+'تُمَا',
+  '2fp': SUKUN+'تُنَّ',
+  '1s':  SUKUN+'تُ',
+  '1p':  SUKUN+'نَا',
+};
+const PRESENT_PREFIX = {
+  '3ms':'ي','3md':'ي','3mp':'ي','3fs':'ت','3fd':'ت','3fp':'ي',
+  '2ms':'ت','2md':'ت','2mp':'ت','2fs':'ت','2fd':'ت','2fp':'ت',
+  '1s':'أ','1p':'ن'
+};
+const PRESENT_SUFFIX = {
+  '3ms': DAMMA,
+  '3md': FATHA+'انِ',
+  '3mp': DAMMA+'ونَ',
+  '3fs': DAMMA,
+  '3fd': FATHA+'انِ',
+  '3fp': SUKUN+'نَ',
+  '2ms': DAMMA,
+  '2md': FATHA+'انِ',
+  '2mp': DAMMA+'ونَ',
+  '2fs': KASRA+'ينَ',
+  '2fd': FATHA+'انِ',
+  '2fp': SUKUN+'نَ',
+  '1s':  DAMMA,
+  '1p':  DAMMA,
+};
+
+function postProcessHamza(w){
+  w = w.replace(/^أَأْ/, 'آ');                 // أَأْ -> آ
+  w = w.replace(/^أُأْ/, 'أُو');     // أُأْ -> أُو
+  w = w.replace(/أِي/g, 'ئِي');           // أِي -> ئِي
+  return w;
+}
+
+function conjugate(verb, tense, voice, person){
+  let word;
+  if (tense==='past' && voice==='active'){
+    word = getPastActiveStem(verb) + PAST_SUFFIX[person];
+  } else if (tense==='present' && voice==='active'){
+    const stem = getPresentActiveStem(verb);
+    word = PRESENT_PREFIX[person] + FATHA + stem + PRESENT_SUFFIX[person];
+  } else if (tense==='past' && voice==='passive'){
+    const r = getRoot(verb);
+    const stem = r[0]+DAMMA+r[1]+KASRA+r[2];
+    word = stem + PAST_SUFFIX[person];
+  } else {
+    const r = getRoot(verb);
+    // Bei mithal-Verben (1. Radikal و/ي) fungiert der Radikal nach der Dammah
+    // als Langvokal-Buchstabe (madd) und bekommt konventionell kein Sukūn.
+    const r0 = (r[0]==='و'||r[0]==='ي') ? r[0] : r[0]+SUKUN;
+    const stem = r0+r[1]+FATHA+r[2];
+    word = PRESENT_PREFIX[person] + DAMMA + stem + PRESENT_SUFFIX[person];
+  }
+  return postProcessHamza(word);
+}
+
+/* =========================================================
+   3) HAND-LAYOUT & PRONOMEN
+========================================================= */
+const PRONOUNS = {
+  '3ms':{ar:'هُوَ', de:'er', num:'3.', gen:'mask.', cnt:'Singular'},
+  '3md':{ar:'هُما', de:'sie beide (m.)', num:'3.', gen:'mask.', cnt:'Dual'},
+  '3mp':{ar:'هُمْ', de:'sie (m.)', num:'3.', gen:'mask.', cnt:'Plural'},
+  '3fs':{ar:'هِيَ', de:'sie', num:'3.', gen:'fem.', cnt:'Singular'},
+  '3fd':{ar:'هُما', de:'sie beide (f.)', num:'3.', gen:'fem.', cnt:'Dual'},
+  '3fp':{ar:'هُنَّ', de:'sie (f.)', num:'3.', gen:'fem.', cnt:'Plural'},
+  '2ms':{ar:'أَنْتَ', de:'du (m.)', num:'2.', gen:'mask.', cnt:'Singular'},
+  '2md':{ar:'أَنْتُما', de:'ihr beide (m.)', num:'2.', gen:'mask.', cnt:'Dual'},
+  '2mp':{ar:'أَنْتُمْ', de:'ihr (m.)', num:'2.', gen:'mask.', cnt:'Plural'},
+  '2fs':{ar:'أَنْتِ', de:'du (f.)', num:'2.', gen:'fem.', cnt:'Singular'},
+  '2fd':{ar:'أَنْتُما', de:'ihr beide (f.)', num:'2.', gen:'fem.', cnt:'Dual'},
+  '2fp':{ar:'أَنْتُنَّ', de:'ihr (f.)', num:'2.', gen:'fem.', cnt:'Plural'},
+  '1s': {ar:'أَنا', de:'ich', num:'1.', gen:'', cnt:'Singular'},
+  '1p': {ar:'نَحْنُ', de:'wir', num:'1.', gen:'', cnt:'Plural'},
+};
+
+// Reihenfolge für Stufe 1 (Reihenfolge) - identisch zur Spalten/Zeilen-Logik der Tabelle
+const PERSON_ORDER = ['3ms','3md','3mp','3fs','3fd','3fp','2ms','2md','2mp','2fs','2fd','2fp','1s','1p'];
+
+/* =========================================================
+   4) KONJUGATIONS-TABELLE ERZEUGEN
+   (Layout wie im handschriftlichen Vorbild: غائب | مخاطَب | مُتَكَلِّم
+    Spalten, جمع/مثنى/مفرد Zeilen, نحن/أنا als verschmolzene Zelle)
+========================================================= */
+function buildConjugationTable(){
+  const cell = (person, rowspan) => `<td class="cell ar" id="cell-${person}" data-person="${person}"${rowspan?` rowspan="${rowspan}"`:''}>${PRONOUNS[person].ar}</td>`;
+  return `
+  <table class="conjtable">
+    <thead>
+      <tr>
+        <th class="cornercell"></th>
+        <th colspan="2" class="groupcell ar">غائِب<div class="sub">3. Person</div></th>
+        <th colspan="2" class="groupcell ar">مُخاطَب<div class="sub">2. Person</div></th>
+        <th class="groupcell ar">مُتَكَلِّم<div class="sub">1. Person</div></th>
+      </tr>
+      <tr>
+        <th class="cornercell"></th>
+        <th class="gendercell ar">مذكر</th>
+        <th class="gendercell ar">مؤنث</th>
+        <th class="gendercell ar">مذكر</th>
+        <th class="gendercell ar">مؤنث</th>
+        <th class="gendercell"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th class="rowlabel ar">جَمْع<div class="sub">Plural</div></th>
+        ${cell('3mp')}${cell('3fp')}${cell('2mp')}${cell('2fp')}${cell('1p',2)}
+      </tr>
+      <tr>
+        <th class="rowlabel ar">مُثَنّى<div class="sub">Dual</div></th>
+        ${cell('3md')}${cell('3fd')}${cell('2md')}${cell('2fd')}
+      </tr>
+      <tr>
+        <th class="rowlabel ar">مُفْرَد<div class="sub">Singular</div></th>
+        ${cell('3ms')}${cell('3fs')}${cell('2ms')}${cell('2fs')}${cell('1s')}
+      </tr>
+    </tbody>
+  </table>`;
+}
+
+/* =========================================================
+   5) STATE & LOGIK
+========================================================= */
+let cfg = { tense:'past', voice:'active', order:'sequential', vocab:false, babFilter:new Set([1,2,3,4,5,6]) };
+let session = { correct:0, incorrect:0 };
+let pool = [];               // gefilterte Verbliste
+let poolIdx = 0;
+let verb = null;
+let sequence = [];           // Personen-Reihenfolge für aktuelles Verb
+let posIdx = 0;
+let results = {};            // person -> 'correct' | 'incorrect'
+let stage = 0;                // 0=Frage, 1=Grundform gezeigt (nur Vokabelmodus), 2=Konjugation gezeigt
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function rebuildPool(){
+  pool = VERBS.filter(v=>cfg.babFilter.has(v.bab));
+  if(pool.length===0) pool = VERBS.slice();
+  if(!pool.includes(verb)){ poolIdx = 0; }
+}
+
+function startVerb(v){
+  verb = v;
+  poolIdx = pool.indexOf(v);
+  results = {};
+  sequence = cfg.order==='sequential' ? PERSON_ORDER.slice() : shuffle(PERSON_ORDER);
+  posIdx = 0;
+  stage = 0;
+  render();
+}
+
+function currentPerson(){ return sequence[posIdx]; }
+
+function grade(isCorrect){
+  const p = currentPerson();
+  results[p] = isCorrect ? 'correct' : 'incorrect';
+  session[isCorrect?'correct':'incorrect']++;
+  if(posIdx < sequence.length-1){
+    posIdx++; stage=0;
+    render();
+  } else {
+    render(true); // Zusammenfassung
+  }
+}
+
+function nextVerbAuto(dir){
+  if(pool.length===0) return;
+  poolIdx = (poolIdx + dir + pool.length) % pool.length;
+  startVerb(pool[poolIdx]);
+}
+function randomVerb(){
+  if(pool.length===0) return;
+  let v; do{ v = pool[Math.floor(Math.random()*pool.length)]; }while(pool.length>1 && v===verb);
+  startVerb(v);
+}
+
+/* =========================================================
+   6) RENDERING
+========================================================= */
+const $ = sel => document.querySelector(sel);
+
+function initStaticUI(){
+  $('#tableWrap').innerHTML = buildConjugationTable();
+
+  // tense/voice/order toggles
+  document.querySelectorAll('#tenseSeg button').forEach(b=>b.onclick=()=>{cfg.tense=b.dataset.val; syncToggles(); render();});
+  document.querySelectorAll('#voiceSeg button').forEach(b=>b.onclick=()=>{cfg.voice=b.dataset.val; syncToggles(); render();});
+  document.querySelectorAll('#orderSeg button').forEach(b=>b.onclick=()=>{cfg.order=b.dataset.val; syncToggles(); startVerb(verb);});
+  $('#vocabCheckbox').onchange = e=>{cfg.vocab=e.target.checked; syncToggles(); stage=0; render();};
+
+  // bab filter
+  const babWrap = $('#babFilter');
+  for(let b=1;b<=6;b++){
+    const id = 'bab'+b;
+    const lbl = document.createElement('label');
+    lbl.innerHTML = `<input type="checkbox" id="${id}" checked> Bāb ${b}`;
+    babWrap.appendChild(lbl);
+    lbl.querySelector('input').onchange = e=>{
+      if(e.target.checked) cfg.babFilter.add(b); else cfg.babFilter.delete(b);
+      lbl.classList.toggle('on', e.target.checked);
+      rebuildPool();
+      populateVerbSelect();
+      if(!pool.includes(verb)) startVerb(pool[0]); else render();
+    };
+    lbl.classList.add('on');
+  }
+
+  // verb select
+  populateVerbSelect();
+  $('#verbSelect').onchange = e=>{ startVerb(VERBS[+e.target.value]); };
+
+  $('#btnPrevVerb').onclick = ()=>nextVerbAuto(-1);
+  $('#btnNextVerb').onclick = ()=>nextVerbAuto(1);
+  $('#btnRandomVerb').onclick = randomVerb;
+  $('#btnResetStats').onclick = ()=>{ session={correct:0,incorrect:0}; render(); };
+
+  syncToggles();
+}
+
+function populateVerbSelect(){
+  const sel = $('#verbSelect');
+  sel.innerHTML = '';
+  for(let b=1;b<=6;b++){
+    const group = document.createElement('optgroup');
+    group.label = 'Bāb '+b;
+    VERBS.filter(v=>v.bab===b).forEach(v=>{
+      const opt = document.createElement('option');
+      opt.value = v.id;
+      opt.textContent = `${v.past}  —  ${shortMeaning(v.de)}`;
+      group.appendChild(opt);
+    });
+    sel.appendChild(group);
+  }
+}
+
+function syncToggles(){
+  document.querySelectorAll('#tenseSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.tense));
+  document.querySelectorAll('#voiceSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.voice));
+  document.querySelectorAll('#orderSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.order));
+  $('#vocabCheckbox').checked = cfg.vocab;
+  $('#vocabToggle').classList.toggle('on', cfg.vocab);
+}
+
+function tenseVoiceLabel(){
+  const t = cfg.tense==='past' ? 'Vergangenheit' : 'Gegenwart';
+  const v = cfg.voice==='active' ? 'Aktiv' : 'Passiv';
+  return `${t} · ${v}`;
+}
+
+function updateTableColors(){
+  PERSON_ORDER.forEach(person=>{
+    const c = document.getElementById('cell-'+person);
+    if(!c) return;
+    c.classList.remove('current','correct','incorrect');
+    const res = results[person];
+    if(res) c.classList.add(res);
+    if(person === currentPerson() && !res) c.classList.add('current');
+  });
+}
+
+function renderProgressDots(){
+  const wrap = $('#progressDots');
+  wrap.innerHTML = '';
+  sequence.forEach((p,i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot';
+    if(results[p]) d.classList.add(results[p]);
+    if(i===posIdx && !results[p]) d.classList.add('current');
+    wrap.appendChild(d);
+  });
+}
+
+function renderQuizCard(finished){
+  const panel = $('#quizPanel');
+  if(finished){
+    const ok = Object.values(results).filter(r=>r==='correct').length;
+    const no = Object.values(results).filter(r=>r==='incorrect').length;
+    panel.innerHTML = `
+      <div class="summary">
+        <div style="font-size:1.4rem; font-weight:700;" class="ar">${verb.past} <span style="font-size:1rem; font-weight:400; color:var(--text-dim);">— ${shortMeaning(verb.de)}</span></div>
+        <div class="score"><span class="ok">${ok}</span><span class="sep"> / </span>${sequence.length}</div>
+        <div style="color:var(--text-dim); font-size:.85rem;">${ok} richtig · ${no} falsch — ${tenseVoiceLabel()}</div>
+        <div class="summary-actions">
+          <button class="btn btn-ghost" id="btnRetrySame">🔁 Diese Hand wiederholen</button>
+          ${no>0?'<button class="btn btn-ghost" id="btnRetryWrong">✏️ Nur Fehler wiederholen</button>':''}
+          <button class="btn btn-accent" id="btnGoNext">Nächstes Verb →</button>
+        </div>
+      </div>`;
+    $('#btnRetrySame').onclick = ()=>startVerb(verb);
+    $('#btnGoNext').onclick = randomVerb;
+    if(no>0){
+      $('#btnRetryWrong').onclick = ()=>{
+        sequence = Object.keys(results).filter(p=>results[p]==='incorrect');
+        results = {}; posIdx = 0; stage = 0; render();
+      };
+    }
+    return;
+  }
+
+  const person = currentPerson();
+  const pron = PRONOUNS[person];
+  const badges = `<div class="modebadges">
+      <span class="badge">${tenseVoiceLabel()}</span>
+      <span class="badge">${cfg.order==='sequential'?'Stufe 1':'Stufe 2 · zufällig'}</span>
+      ${cfg.vocab?'<span class="badge">Vokabel-Modus</span>':''}
+    </div>`;
+
+  if(cfg.vocab){
+    if(stage===0){
+      panel.innerHTML = `
+        ${badges}
+        <div class="prompt">${pron.num} Person ${pron.gen} ${pron.cnt} von „${shortMeaning(verb.de)}"</div>
+        <div class="answerzone">
+          <button class="reveal-btn" id="btnReveal1">Antwort zeigen</button>
+        </div>`;
+      $('#btnReveal1').onclick = ()=>{ stage=2; render(); };
+    } else {
+      const answer = conjugate(verb, cfg.tense, cfg.voice, person);
+      panel.innerHTML = `
+        ${badges}
+        <div class="prompt">${pron.num} Person ${pron.gen} ${pron.cnt} von „${shortMeaning(verb.de)}"</div>
+        <div class="answerzone">
+          <div class="answer-sub ar" style="font-size:1rem;">${pron.ar} <span style="color:var(--text-dim);">(${pron.de})</span></div>
+          <div class="answer-ar ar">${answer}</div>
+          <div class="gradebtns">
+            <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
+            <button class="gradebtn no" id="btnNo">✗ Falsch</button>
+          </div>
+        </div>`;
+      $('#btnOk').onclick = ()=>grade(true);
+      $('#btnNo').onclick = ()=>grade(false);
+    }
+  } else {
+    if(stage===0){
+      panel.innerHTML = `
+        ${badges}
+        <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+        <div class="answerzone">
+          <button class="reveal-btn" id="btnReveal">Antwort zeigen</button>
+        </div>`;
+      $('#btnReveal').onclick = ()=>{ stage=2; render(); };
+    } else {
+      const answer = conjugate(verb, cfg.tense, cfg.voice, person);
+      panel.innerHTML = `
+        ${badges}
+        <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+        <div class="answerzone">
+          <div class="answer-ar ar">${answer}</div>
+          <div class="gradebtns">
+            <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
+            <button class="gradebtn no" id="btnNo">✗ Falsch</button>
+          </div>
+        </div>`;
+      $('#btnOk').onclick = ()=>grade(true);
+      $('#btnNo').onclick = ()=>grade(false);
+    }
+  }
+}
+
+function render(finished){
+  $('#verbAr').textContent = verb.past + '  ·  ' + verb.pres;
+  $('#verbBabTag').textContent = 'Bāb '+verb.bab;
+  $('#verbDe').textContent = verb.de;
+  $('#verbSelect').value = String(verb.id);
+
+  updateTableColors();
+  renderProgressDots();
+  renderQuizCard(finished===true);
+
+  $('#statCorrect').textContent = session.correct;
+  $('#statIncorrect').textContent = session.incorrect;
+}
+
+/* =========================================================
+   7) INIT
+========================================================= */
+document.addEventListener('keydown', e=>{
+  if(e.code==='Space' || e.code==='Enter'){
+    const revealBtn = document.querySelector('.reveal-btn');
+    if(revealBtn){ e.preventDefault(); revealBtn.click(); }
+  } else if(e.key.toLowerCase()==='r'){
+    const b = document.getElementById('btnOk'); if(b) b.click();
+  } else if(e.key.toLowerCase()==='f'){
+    const b = document.getElementById('btnNo'); if(b) b.click();
+  }
+});
+
+initStaticUI();
+rebuildPool();
+startVerb(pool[0]);
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
