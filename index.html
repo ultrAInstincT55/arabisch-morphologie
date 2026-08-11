@@ -84,10 +84,6 @@
   .seg button.active{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); box-shadow:0 4px 10px -4px rgba(150,110,20,.5); }
   .seg button:hover:not(.active){ color:var(--text); }
 
-  .chip-toggle{ display:inline-flex; align-items:center; gap:7px; background:var(--tan); border:1px solid var(--border);
-    border-radius:14px; padding:9px 14px; cursor:pointer; font-size:.83rem; font-weight:600; color:var(--text-dim); user-select:none; }
-  .chip-toggle input{ accent-color:var(--gold); width:15px; height:15px; }
-  .chip-toggle.on{ color:var(--gold-text); border-color:var(--gold); background:var(--gold-light); }
 
   .babfilter{ display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; width:100%; }
   .babfilter label{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--tan); border:1px solid var(--border);
@@ -166,11 +162,7 @@
   .answerzone{ min-height:130px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
   .reveal-btn{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); border:none; border-radius:16px; padding:16px 32px; font-family:inherit; font-size:1rem;
     font-weight:700; cursor:pointer; box-shadow:0 10px 22px -8px rgba(0,0,0,.4); }
-  .reveal-btn.secondary{ background:linear-gradient(135deg, var(--tan2), var(--tan)); color:var(--dark); }
   .answer-ar{ font-size:2.2rem; font-weight:700; color:var(--gold-light); }
-  .answer-sub{ color:var(--dark-text); opacity:.75; font-size:.85rem; }
-  .dict-form{ font-size:1.6rem; font-weight:600; margin-bottom:2px; color:var(--gold-light); }
-  .dict-hint{ color:var(--dark-text); opacity:.6; font-size:.8rem; }
 
   .gradebtns{ display:flex; gap:12px; margin-top:6px; }
   .gradebtn{ border:none; border-radius:16px; padding:13px 28px; font-family:inherit; font-size:.95rem; font-weight:700; cursor:pointer; min-width:120px; }
@@ -190,7 +182,6 @@
   @media (max-width:480px){
     .verbcard .ar-verb{ font-size:1.3rem; }
     .answer-ar{ font-size:1.8rem; }
-    .dict-form{ font-size:1.3rem; }
     .verbcard.hero{ flex-direction:column; align-items:stretch; }
     .verbcard.hero select{ width:100%; }
     .navbar{ flex-wrap:nowrap; }
@@ -221,9 +212,6 @@
         <button data-val="sequential">Stufe 1 · Reihenfolge</button>
         <button data-val="random">Stufe 2 · Kreuz &amp; quer</button>
       </div>
-      <label class="chip-toggle" id="vocabToggle">
-        <input type="checkbox" id="vocabCheckbox"> Vokabel-Modus
-      </label>
     </div>
     <div class="row">
       <div class="babfilter" id="babFilter"></div>
@@ -387,7 +375,12 @@ const RAW_VERBS = [
 
 const VERBS = RAW_VERBS.map((v,i)=>({ id:i, past:v[0], pres:v[1], bab:v[2], de:v[3] }));
 
-function shortMeaning(de){ return de.split(/[;,(]/)[0].trim(); }
+function shortMeaning(de){
+  let s = de.split(/[;,]/)[0].trim();
+  s = s.replace(/^\(([^)]*)\)/, '$1');   // "(er)öffnen" -> "eröffnen" (Vorsilbe in Klammern anfügen)
+  s = s.replace(/\s*\([^)]*\)/g, '');    // weitere Klammer-Anmerkungen entfernen, z.B. "beschreiten (einen Weg)"
+  return s.trim();
+}
 
 /* =========================================================
    2) KONJUGATIONS-ENGINE
@@ -540,7 +533,7 @@ function buildConjugationTable(){
 /* =========================================================
    5) STATE & LOGIK
 ========================================================= */
-let cfg = { tense:'past', voice:'active', order:'sequential', vocab:false, babFilter:new Set([1,2,3,4,5,6]) };
+let cfg = { tense:'past', voice:'active', order:'sequential', babFilter:new Set([1,2,3,4,5,6]) };
 let session = { correct:0, incorrect:0 };
 let pool = [];               // gefilterte Verbliste
 let poolIdx = 0;
@@ -548,7 +541,7 @@ let verb = null;
 let sequence = [];           // Personen-Reihenfolge für aktuelles Verb
 let posIdx = 0;
 let results = {};            // person -> 'correct' | 'incorrect'
-let stage = 0;                // 0=Frage, 1=Grundform gezeigt (nur Vokabelmodus), 2=Konjugation gezeigt
+let stage = 0;                // 0=Frage, 2=Antwort gezeigt
 
 function shuffle(arr){
   const a=[...arr];
@@ -609,7 +602,6 @@ function initStaticUI(){
   document.querySelectorAll('#tenseSeg button').forEach(b=>b.onclick=()=>{cfg.tense=b.dataset.val; syncToggles(); render();});
   document.querySelectorAll('#voiceSeg button').forEach(b=>b.onclick=()=>{cfg.voice=b.dataset.val; syncToggles(); render();});
   document.querySelectorAll('#orderSeg button').forEach(b=>b.onclick=()=>{cfg.order=b.dataset.val; syncToggles(); startVerb(verb);});
-  $('#vocabCheckbox').onchange = e=>{cfg.vocab=e.target.checked; syncToggles(); stage=0; render();};
 
   // bab filter
   const babWrap = $('#babFilter');
@@ -660,8 +652,6 @@ function syncToggles(){
   document.querySelectorAll('#tenseSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.tense));
   document.querySelectorAll('#voiceSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.voice));
   document.querySelectorAll('#orderSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.order));
-  $('#vocabCheckbox').checked = cfg.vocab;
-  $('#vocabToggle').classList.toggle('on', cfg.vocab);
 }
 
 function tenseVoiceLabel(){
@@ -725,58 +715,30 @@ function renderQuizCard(finished){
   const badges = `<div class="modebadges">
       <span class="badge">${tenseVoiceLabel()}</span>
       <span class="badge">${cfg.order==='sequential'?'Stufe 1':'Stufe 2 · zufällig'}</span>
-      ${cfg.vocab?'<span class="badge">Vokabel-Modus</span>':''}
     </div>`;
 
-  if(cfg.vocab){
-    if(stage===0){
-      panel.innerHTML = `
-        ${badges}
-        <div class="prompt">${pron.num} Person ${pron.gen} ${pron.cnt} von „${shortMeaning(verb.de)}"</div>
-        <div class="answerzone">
-          <button class="reveal-btn" id="btnReveal1">Antwort zeigen</button>
-        </div>`;
-      $('#btnReveal1').onclick = ()=>{ stage=2; render(); };
-    } else {
-      const answer = conjugate(verb, cfg.tense, cfg.voice, person);
-      panel.innerHTML = `
-        ${badges}
-        <div class="prompt">${pron.num} Person ${pron.gen} ${pron.cnt} von „${shortMeaning(verb.de)}"</div>
-        <div class="answerzone">
-          <div class="answer-sub ar" style="font-size:1rem;">${pron.ar} <span style="color:var(--text-dim);">(${pron.de})</span></div>
-          <div class="answer-ar ar">${answer}</div>
-          <div class="gradebtns">
-            <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
-            <button class="gradebtn no" id="btnNo">✗ Falsch</button>
-          </div>
-        </div>`;
-      $('#btnOk').onclick = ()=>grade(true);
-      $('#btnNo').onclick = ()=>grade(false);
-    }
+  if(stage===0){
+    panel.innerHTML = `
+      ${badges}
+      <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+      <div class="answerzone">
+        <button class="reveal-btn" id="btnReveal">Antwort zeigen</button>
+      </div>`;
+    $('#btnReveal').onclick = ()=>{ stage=2; render(); };
   } else {
-    if(stage===0){
-      panel.innerHTML = `
-        ${badges}
-        <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
-        <div class="answerzone">
-          <button class="reveal-btn" id="btnReveal">Antwort zeigen</button>
-        </div>`;
-      $('#btnReveal').onclick = ()=>{ stage=2; render(); };
-    } else {
-      const answer = conjugate(verb, cfg.tense, cfg.voice, person);
-      panel.innerHTML = `
-        ${badges}
-        <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
-        <div class="answerzone">
-          <div class="answer-ar ar">${answer}</div>
-          <div class="gradebtns">
-            <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
-            <button class="gradebtn no" id="btnNo">✗ Falsch</button>
-          </div>
-        </div>`;
-      $('#btnOk').onclick = ()=>grade(true);
-      $('#btnNo').onclick = ()=>grade(false);
-    }
+    const answer = conjugate(verb, cfg.tense, cfg.voice, person);
+    panel.innerHTML = `
+      ${badges}
+      <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+      <div class="answerzone">
+        <div class="answer-ar ar">${answer}</div>
+        <div class="gradebtns">
+          <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
+          <button class="gradebtn no" id="btnNo">✗ Falsch</button>
+        </div>
+      </div>`;
+    $('#btnOk').onclick = ()=>grade(true);
+    $('#btnNo').onclick = ()=>grade(false);
   }
 }
 
