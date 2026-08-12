@@ -130,34 +130,37 @@
   .dot.incorrect{ background:var(--red); border-color:var(--red); }
   .dot.current{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(189,145,66,.25); }
 
-  /* Konjugationstabelle - Personen als Zeilen, Zahl (Sg/Du/Pl) als Spalten: passt komplett auf schmale Screens */
+  /* Konjugationstabelle - غائِب/مُخاطَب/مُتَكَلِّم als Spalten (wie im Vorbild). Die Zeilen-
+     Beschriftung (جمع/مثنى/مفرد) steht als schmaler, um 90° gedrehter Streifen, damit die
+     Tabelle auch auf schmalen Handy-Screens komplett ohne Scrollen passt. */
   .tablewrap{ margin:2px 0; }
   .conjtable{ border-collapse:collapse; width:100%; table-layout:fixed; }
   .conjtable th, .conjtable td{ border:1px solid var(--border); text-align:center; }
-  .conjtable col.colrowlabel{ width:19%; }
-  .conjtable col.colgender{ width:15%; }
-  .conjtable thead th{ background:var(--tan); color:var(--gold); font-weight:700; font-size:.8rem; padding:7px 2px; }
-  .conjtable thead th.cornercell{ background:transparent; border:none; }
-  .conjtable th .sub{ display:block; font-size:.58rem; font-weight:600; color:var(--text-dim); margin-top:1px; direction:ltr; font-family:'Poppins',sans-serif; }
-  .conjtable tbody th.gendercell{ background:var(--tan); color:var(--text-dim); font-weight:600; font-size:.72rem; padding:4px 2px; }
-  .conjtable tbody th.rowlabel{ background:var(--tan); color:var(--gold); font-weight:700; font-size:.78rem; padding:4px 2px; vertical-align:middle; }
-  .conjtable td.cell{ background:var(--card); font-size:1.35rem; font-weight:600; padding:10px 2px; color:var(--text); transition:background .2s,color .2s; }
+  .conjtable thead th.cornercell{ background:transparent; border:none; width:9%; }
+  .conjtable thead th{ background:var(--tan); color:var(--gold); font-weight:700; font-size:.78rem; padding:6px 1px; }
+  .conjtable th .sub{ display:block; font-size:.56rem; font-weight:600; color:var(--text-dim); margin-top:1px; direction:ltr; font-family:'Poppins',sans-serif; }
+  .conjtable tbody th.gendercell{ background:var(--tan); color:var(--text-dim); font-weight:600; font-size:.68rem; padding:4px 1px; }
+  .conjtable tbody th.rowlabel{ background:var(--tan); width:9%; padding:2px 0; }
+  .conjtable tbody th.rowlabel span{ writing-mode:vertical-rl; transform:rotate(180deg); color:var(--gold); font-weight:700; font-size:.72rem; white-space:nowrap; }
+  .conjtable td.cell{ background:var(--card); font-size:1.3rem; font-weight:600; padding:9px 1px; color:var(--text); transition:background .2s,color .2s; }
   .conjtable td.cell.current{ background:var(--gold-light); color:var(--gold-text); box-shadow:inset 0 0 0 2px var(--gold); }
   .conjtable td.cell.correct{ background:var(--green-bg); color:var(--green-text); }
   .conjtable td.cell.incorrect{ background:var(--red-bg); color:var(--red-text); }
   @media (max-width:480px){
-    .conjtable td.cell{ font-size:1.1rem; padding:9px 1px; }
-    .conjtable thead th{ font-size:.72rem; }
-    .conjtable tbody th.rowlabel{ font-size:.7rem; }
-    .conjtable tbody th.gendercell{ font-size:.65rem; }
+    .conjtable td.cell{ font-size:1.02rem; padding:8px 1px; }
+    .conjtable thead th{ font-size:.66rem; padding:5px 1px; }
+    .conjtable tbody th.gendercell{ font-size:.6rem; }
+    .conjtable tbody th.rowlabel span{ font-size:.64rem; }
   }
 
   /* Quiz card */
   .quizcard{ text-align:center; padding:26px 18px 22px;
     background:linear-gradient(150deg, var(--dark), var(--dark2)); border-color:var(--dark2); color:var(--dark-text); }
-  .prompt{ font-size:1.02rem; color:var(--dark-text); margin-bottom:4px; line-height:1.5; }
-  .prompt .who-ar{ font-size:1.3rem; margin-inline-end:6px; color:var(--gold-light); }
+  .prompt{ font-size:1.02rem; color:var(--dark-text); margin-bottom:10px; line-height:1.5; }
+  .prompt .who-line{ display:flex; align-items:baseline; justify-content:center; gap:9px; flex-wrap:wrap; }
+  .prompt .who-ar{ font-size:1.3rem; color:var(--gold-light); }
   .prompt .who-de{ color:var(--dark-text); opacity:.65; font-size:.85rem; }
+  .prompt .de-sentence{ margin-top:8px; font-size:1.15rem; font-weight:600; color:var(--dark-text); }
   .modebadges{ display:flex; justify-content:center; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
   .badge{ font-size:.65rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:var(--gold-light);
     background:rgba(227,194,113,.14); border:1px solid rgba(227,194,113,.35); border-radius:7px; padding:3px 8px; }
@@ -201,19 +204,21 @@
   <div class="panel" id="settingsPanel">
     <h2>Einstellungen</h2>
     <div class="row">
-      <div class="seg" id="tenseSeg">
-        <button data-val="past">Vergangenheit</button>
-        <button data-val="present">Gegenwart</button>
-      </div>
-      <div class="seg" id="voiceSeg">
-        <button data-val="active">Aktiv</button>
-        <button data-val="passive">Passiv</button>
-      </div>
+      <select id="tenseSelect" class="ar">
+        <option value="past">اَلْمَاضِي — Vergangenheit</option>
+        <option value="present">اَلْمُضَارِع — Gegenwart</option>
+        <option value="random">عَشْوَائِيّ — Zufällig (pro Verb)</option>
+      </select>
+      <select id="voiceSelect" class="ar">
+        <option value="active">مَعْلُوم — Aktiv</option>
+        <option value="passive">مَجْهُول — Passiv</option>
+        <option value="random">عَشْوَائِيّ — Zufällig (pro Verb)</option>
+      </select>
     </div>
     <div class="row">
       <div class="seg" id="orderSeg">
-        <button data-val="sequential">Stufe 1 · Reihenfolge</button>
-        <button data-val="random">Stufe 2 · Kreuz &amp; quer</button>
+        <button data-val="sequential">Stufe 1 · تَرْتِيب</button>
+        <button data-val="random">Stufe 2 · عَشْوَائِيّ</button>
       </div>
     </div>
     <div class="row">
@@ -492,49 +497,229 @@ const PRONOUNS = {
 const PERSON_ORDER = ['3ms','3md','3mp','3fs','3fd','3fp','2ms','2md','2mp','2fs','2fd','2fp','1s','1p'];
 
 /* =========================================================
+   3b) DEUTSCHE SATZÜBERSETZUNG DER KONJUGATION
+   Erzeugt aus der Kurzbedeutung (shortMeaning) einen konjugierten
+   deutschen Satz wie "er betet an" / "ihm wurde geholfen".
+   Deckt trennbare/untrennbare Präfixe, starke/unregelmäßige Verben,
+   "sein"-Kopula-Wendungen (z.B. "traurig sein") und Dativ-Verben
+   (Passiv als unpersönliche Konstruktion) für die konkreten 110
+   Verben dieser App ab - kein allgemeiner Konjugator für beliebige
+   deutsche Wörter.
+========================================================= */
+const PERSON_TO_VCLASS = {
+  '3ms':'er','3md':'sie','3mp':'sie', '3fs':'er','3fd':'sie','3fp':'sie',
+  '2ms':'du','2md':'ihr','2mp':'ihr', '2fs':'du','2fd':'ihr','2fp':'ihr',
+  '1s':'ich','1p':'wir'
+};
+const DATIVE_PRONOUNS = {
+  '3ms':'ihm','3md':'ihnen','3mp':'ihnen', '3fs':'ihr','3fd':'ihnen','3fp':'ihnen',
+  '2ms':'dir','2md':'euch','2mp':'euch', '2fs':'dir','2fd':'euch','2fp':'euch',
+  '1s':'mir','1p':'uns'
+};
+
+const SEP_PREFIXES = ['zurück','zuvor','nieder','nach','weg','aus','ein','an','ab'];
+const INSEP_PREFIXES = ['miss','unter','ver','ent','emp','zer','be','er','ge'];
+const DATIVE_VERBS = new Set(['danken','folgen','nachfolgen','vergeben','erlauben']);
+
+const SEIN_PRAES = {ich:'bin',du:'bist',er:'ist',wir:'sind',ihr:'seid',sie:'sind'};
+const SEIN_PRAET = {ich:'war',du:'warst',er:'war',wir:'waren',ihr:'wart',sie:'waren'};
+const HABEN      = {ich:'habe',du:'hast',er:'hat',wir:'haben',ihr:'habt',sie:'haben'};
+const SEIN_AUX   = {ich:'bin',du:'bist',er:'ist',wir:'sind',ihr:'seid',sie:'sind'};
+const WERDEN_PRAES = {ich:'werde',du:'wirst',er:'wird',wir:'werden',ihr:'werdet',sie:'werden'};
+const WERDEN_PRAET = {ich:'wurde',du:'wurdest',er:'wurde',wir:'wurden',ihr:'wurdet',sie:'wurden'};
+
+// Wiederverwendbare unregelmäßige Wortstämme (für trennbare Verben: nur der Stamm nach
+// Abtrennung der Vorsilbe; part = Partizip OHNE "ge", da das ge-Präfix bei der Zusammen-
+// setzung passend eingefügt wird). Werden auch für das bloße Grundverb ohne Vorsilbe genutzt.
+const ROOT_IRREG = {
+  treten: {du:'trittst', er:'tritt',  part:'treten', aux:'sein'},
+  nehmen: {du:'nimmst',  er:'nimmt',  part:'nommen'},
+  kommen: {                            part:'kommen', aux:'sein'},
+  werfen: {du:'wirfst',  er:'wirft',  part:'worfen'},
+  lassen: {du:'lässt',   er:'lässt',  part:'lassen'},
+  denken: {                            part:'dacht'},
+  stoßen: {du:'stößt',   er:'stößt',  part:'stoßen'},
+  kehren: {aux:'sein'},
+};
+
+// Vollständig unregelmäßige/starke Verben (Endformen direkt, keine Zusammensetzung nötig)
+const FULL_WORD = {
+  tun:        {ich:'tue', du:'tust', er:'tut', part:'getan'},
+  koennen:    {ich:'kann', du:'kannst', er:'kann', part:'gekonnt'},
+  wissen:     {ich:'weiß', du:'weißt', er:'weiß', part:'gewusst'},
+  gebären:    {du:'gebierst', er:'gebiert', part:'geboren'},
+  verlieren:  {part:'verloren'},
+  befehlen:   {du:'befiehlst', er:'befiehlt', part:'befohlen'},
+  verlassen:  {du:'verlässt', er:'verlässt', part:'verlassen'},
+  vergeben:   {du:'vergibst', er:'vergibt', part:'vergeben'},
+  erwerben:   {du:'erwirbst', er:'erwirbt', part:'erworben'},
+  ergreifen:  {part:'ergriffen'},
+  entreißen:  {du:'entreißt', er:'entreißt', part:'entrissen'},
+  verstehen:  {part:'verstanden'},
+  beschreiben:{part:'beschrieben'},
+  verschweigen:{part:'verschwiegen'},
+  erheben:    {part:'erhoben'},
+  versprechen:{du:'versprichst', er:'verspricht', part:'versprochen'},
+  beginnen:   {part:'begonnen'},
+  essen:      {du:'isst', er:'isst', part:'gegessen'},
+  schlagen:   {du:'schlägst', er:'schlägt', part:'geschlagen'},
+  blasen:     {du:'bläst', er:'bläst', part:'geblasen'},
+  werden:     {du:'wirst', er:'wird', part:'geworden', aux:'sein'},
+  gehen:      {part:'gegangen', aux:'sein'},
+  bleiben:    {part:'geblieben', aux:'sein'},
+  trinken:    {part:'getrunken'},
+  finden:     {part:'gefunden'},
+  sitzen:     {part:'gesessen'},
+  schneiden:  {part:'geschnitten'},
+  kennen:     {part:'gekannt'},
+  lügen:      {part:'gelogen'},
+  beschreiten:{part:'beschritten'},
+  schreiben:  {part:'geschrieben'},
+  sprechen:   {du:'sprichst', er:'spricht', part:'gesprochen'},
+  schwören:   {part:'geschworen'},
+  tragen:     {du:'trägst', er:'trägt', part:'getragen'},
+};
+
+function isVowelEndingRule(stem){
+  if(/[dt]$/.test(stem)) return 'dt';
+  const m = stem.match(/([a-zäöüß])[mn]$/);            // z.B. "öffn","leugn","regn","atm" -> e-Einschub
+  if(m && !/[lrhmnaeiouäöü]/.test(m[1])) return 'dt';   // NICHT bei "warn","lern","kenn" (Liquid/Nasal/Vokal davor)
+  return /[sßzx]$/.test(stem) ? 's' : '';
+}
+
+function computeRegularFromInfinitive(inf){
+  let stem, ich, du, er, ihr;
+  if(/eln$/.test(inf)){
+    stem = inf.slice(0,-1);                 // "sammeln" -> "sammel"
+    ich = stem.slice(0,-2)+'le';             // "sammel" -> "sammle"
+    du = stem+'st'; er = stem+'t'; ihr = stem+'t';
+  } else if(/ern$/.test(inf)){
+    stem = inf.slice(0,-1);                  // "fordern" -> "forder"
+    ich = stem+'e';
+    du = stem+'st'; er = stem+'t'; ihr = stem+'t';
+  } else {
+    stem = inf.slice(0,-2);                  // "machen" -> "mach"
+    const rule = isVowelEndingRule(stem);
+    ich = stem+'e';
+    du = rule==='dt' ? stem+'est' : rule==='s' ? stem+'t' : stem+'st';
+    er = rule==='dt' ? stem+'et' : stem+'t';
+    ihr = rule==='dt' ? stem+'et' : stem+'t';
+  }
+  return { ich, du, er, wir:inf, ihr, sie:inf, partNoGe: er };
+}
+
+function hasInsepPrefixOrIeren(v){
+  if(/ieren$/.test(v)) return true;
+  return INSEP_PREFIXES.some(p => v.startsWith(p) && v.length > p.length+2);
+}
+
+function getVerbForms(verbTok){
+  const key = verbTok === 'können' ? 'koennen' : verbTok;
+  if(FULL_WORD[key]){
+    const o = FULL_WORD[key];
+    const reg = computeRegularFromInfinitive(verbTok);
+    return {
+      ich:o.ich??reg.ich, du:o.du??reg.du, er:o.er??reg.er,
+      wir:o.wir??reg.wir, ihr:o.ihr??reg.ihr, sie:o.sie??reg.sie,
+      part:o.part, aux:o.aux||'haben', prefix:null, prefixType:'none'
+    };
+  }
+  let prefix=null, stem=verbTok, prefixType='none';
+  for(const p of SEP_PREFIXES){
+    if(verbTok.startsWith(p) && verbTok.length > p.length+2){ prefix=p; stem=verbTok.slice(p.length); prefixType='separable'; break; }
+  }
+  const reg = computeRegularFromInfinitive(stem);
+  const ov = ROOT_IRREG[stem] || {};
+  const partNoGe = ov.part ?? reg.partNoGe;
+  let part;
+  if(prefixType==='separable') part = prefix+'ge'+partNoGe;
+  else part = hasInsepPrefixOrIeren(verbTok) ? partNoGe : 'ge'+partNoGe;
+  return {
+    ich:reg.ich, du:ov.du??reg.du, er:ov.er??reg.er, wir:reg.wir, ihr:reg.ihr, sie:reg.sie,
+    part, aux:ov.aux||'haben', prefix, prefixType
+  };
+}
+
+function deTokenize(deBase){
+  const norm = deBase.replace(/(\S+)\/(\S+)/g, (m,a)=>a); // "sein/werden" -> "sein"
+  const tokens = norm.trim().split(/\s+/);
+  let reflexive = false;
+  if(tokens[0] === 'sich'){ reflexive = true; tokens.shift(); }
+  const verbTok = tokens[tokens.length-1];
+  const remainder = tokens.slice(0,-1).join(' ');
+  return { reflexive, verbTok, remainder };
+}
+
+function deSentence(verb, tense, voice, person){
+  const vclass = PERSON_TO_VCLASS[person];
+  const pronoun = PRONOUNS[person].de;
+  const { reflexive, verbTok, remainder } = deTokenize(shortMeaning(verb.de));
+
+  if(verbTok === 'sein'){
+    const form = (tense==='past' ? SEIN_PRAET : SEIN_PRAES)[vclass];
+    return `${pronoun} ${form}${remainder?' '+remainder:''}`.trim();
+  }
+
+  const forms = getVerbForms(verbTok);
+
+  if(voice==='passive'){
+    if(DATIVE_VERBS.has(verbTok)){
+      const dp = DATIVE_PRONOUNS[person];
+      const w = (tense==='past' ? WERDEN_PRAET : WERDEN_PRAES).er; // unpersönlich, immer 3. Sg.
+      return `${dp} ${w}${remainder?' '+remainder:''} ${forms.part}`.trim();
+    }
+    const w = (tense==='past' ? WERDEN_PRAET : WERDEN_PRAES)[vclass];
+    return `${pronoun} ${w}${remainder?' '+remainder:''} ${forms.part}`.trim();
+  }
+
+  if(tense==='present'){
+    const v = forms[vclass];
+    const tail = [reflexive?'sich':'', remainder, forms.prefixType==='separable'?forms.prefix:''].filter(Boolean).join(' ');
+    return `${pronoun} ${v}${tail?' '+tail:''}`.trim();
+  }
+  const aux = (forms.aux==='sein' ? SEIN_AUX : HABEN)[vclass];
+  const tail = [reflexive?'sich':'', remainder, forms.part].filter(Boolean).join(' ');
+  return `${pronoun} ${aux} ${tail}`.trim();
+}
+
+/* =========================================================
    4) KONJUGATIONS-TABELLE ERZEUGEN
-   (غائب/مخاطَب/مُتَكَلِّم als Zeilen, مفرد/مثنى/جمع als Spalten - schmal
-    genug fürs Handy; نحن als über Dual+Plural verschmolzene Zelle)
+   (غائِب/مُخاطَب/مُتَكَلِّم als Spalten, مفرد/مثنى/جمع als Zeilen - wie im
+    handschriftlichen Vorbild; نحن als über Dual+Plural verschmolzene Zelle.
+    Für schmale Screens: Zeilen-Beschriftung als schmaler, senkrechter Streifen.)
 ========================================================= */
 function buildConjugationTable(){
-  const cell = (person, colspan) => `<td class="cell ar" id="cell-${person}" data-person="${person}"${colspan?` colspan="${colspan}"`:''}>${PRONOUNS[person].ar}</td>`;
+  const cell = (person, rowspan) => `<td class="cell ar" id="cell-${person}" data-person="${person}"${rowspan?` rowspan="${rowspan}"`:''}>${PRONOUNS[person].ar}</td>`;
   return `
   <table class="conjtable">
-    <colgroup>
-      <col class="colrowlabel"><col class="colgender">
-      <col><col><col>
-    </colgroup>
     <thead>
       <tr>
-        <th class="cornercell" colspan="2"></th>
-        <th class="gendercell ar">مُفْرَد<div class="sub">Sg.</div></th>
-        <th class="gendercell ar">مُثَنّى<div class="sub">Du.</div></th>
-        <th class="gendercell ar">جَمْع<div class="sub">Pl.</div></th>
+        <th class="cornercell"></th>
+        <th colspan="2" class="groupcell ar">غائِب<div class="sub">3.</div></th>
+        <th colspan="2" class="groupcell ar">مُخاطَب<div class="sub">2.</div></th>
+        <th class="groupcell ar">مُتَكَلِّم<div class="sub">1.</div></th>
+      </tr>
+      <tr>
+        <th class="cornercell"></th>
+        <th class="gendercell ar">مذكر</th>
+        <th class="gendercell ar">مؤنث</th>
+        <th class="gendercell ar">مذكر</th>
+        <th class="gendercell ar">مؤنث</th>
+        <th class="gendercell"></th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <th rowspan="2" class="rowlabel ar">غائِب<div class="sub">3.</div></th>
-        <th class="gendercell ar">مذكر</th>
-        ${cell('3ms')}${cell('3md')}${cell('3mp')}
+        <th class="rowlabel ar"><span>جَمْع</span></th>
+        ${cell('3mp')}${cell('3fp')}${cell('2mp')}${cell('2fp')}${cell('1p',2)}
       </tr>
       <tr>
-        <th class="gendercell ar">مؤنث</th>
-        ${cell('3fs')}${cell('3fd')}${cell('3fp')}
+        <th class="rowlabel ar"><span>مُثَنّى</span></th>
+        ${cell('3md')}${cell('3fd')}${cell('2md')}${cell('2fd')}
       </tr>
       <tr>
-        <th rowspan="2" class="rowlabel ar">مُخاطَب<div class="sub">2.</div></th>
-        <th class="gendercell ar">مذكر</th>
-        ${cell('2ms')}${cell('2md')}${cell('2mp')}
-      </tr>
-      <tr>
-        <th class="gendercell ar">مؤنث</th>
-        ${cell('2fs')}${cell('2fd')}${cell('2fp')}
-      </tr>
-      <tr>
-        <th class="rowlabel ar">مُتَكَلِّم<div class="sub">1.</div></th>
-        <th class="gendercell"></th>
-        ${cell('1s')}${cell('1p',2)}
+        <th class="rowlabel ar"><span>مُفْرَد</span></th>
+        ${cell('3ms')}${cell('3fs')}${cell('2ms')}${cell('2fs')}${cell('1s')}
       </tr>
     </tbody>
   </table>`;
@@ -544,6 +729,8 @@ function buildConjugationTable(){
    5) STATE & LOGIK
 ========================================================= */
 let cfg = { tense:'past', voice:'active', order:'sequential', babFilter:new Set([1,2,3,4,5,6]) };
+let curTense = 'past';        // pro Verb aufgelöster Wert (falls cfg.tense==='random')
+let curVoice = 'active';      // pro Verb aufgelöster Wert (falls cfg.voice==='random')
 let session = { correct:0, incorrect:0 };
 let pool = [];               // gefilterte Verbliste
 let poolIdx = 0;
@@ -565,10 +752,16 @@ function rebuildPool(){
   if(!pool.includes(verb)){ poolIdx = 0; }
 }
 
+function resolveModes(){
+  curTense = cfg.tense==='random' ? (Math.random()<0.5?'past':'present') : cfg.tense;
+  curVoice = cfg.voice==='random' ? (Math.random()<0.5?'active':'passive') : cfg.voice;
+}
+
 function startVerb(v){
   verb = v;
   poolIdx = pool.indexOf(v);
   results = {};
+  resolveModes();
   sequence = cfg.order==='sequential' ? PERSON_ORDER.slice() : shuffle(PERSON_ORDER);
   posIdx = 0;
   stage = 0;
@@ -608,9 +801,17 @@ const $ = sel => document.querySelector(sel);
 function initStaticUI(){
   $('#tableWrap').innerHTML = buildConjugationTable();
 
-  // tense/voice/order toggles
-  document.querySelectorAll('#tenseSeg button').forEach(b=>b.onclick=()=>{cfg.tense=b.dataset.val; syncToggles(); render();});
-  document.querySelectorAll('#voiceSeg button').forEach(b=>b.onclick=()=>{cfg.voice=b.dataset.val; syncToggles(); render();});
+  // tense/voice (Dropdown, inkl. "Zufällig" - wird pro Verb neu ausgewürfelt)/order
+  $('#tenseSelect').onchange = e=>{
+    cfg.tense = e.target.value;
+    curTense = cfg.tense==='random' ? (Math.random()<0.5?'past':'present') : cfg.tense;
+    render();
+  };
+  $('#voiceSelect').onchange = e=>{
+    cfg.voice = e.target.value;
+    curVoice = cfg.voice==='random' ? (Math.random()<0.5?'active':'passive') : cfg.voice;
+    render();
+  };
   document.querySelectorAll('#orderSeg button').forEach(b=>b.onclick=()=>{cfg.order=b.dataset.val; syncToggles(); startVerb(verb);});
 
   // bab filter
@@ -659,14 +860,18 @@ function populateVerbSelect(){
 }
 
 function syncToggles(){
-  document.querySelectorAll('#tenseSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.tense));
-  document.querySelectorAll('#voiceSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.voice));
+  $('#tenseSelect').value = cfg.tense;
+  $('#voiceSelect').value = cfg.voice;
   document.querySelectorAll('#orderSeg button').forEach(b=>b.classList.toggle('active', b.dataset.val===cfg.order));
 }
 
+const AR_LABEL = {
+  tense: { past:'اَلْمَاضِي', present:'اَلْمُضَارِع' },
+  voice: { active:'مَعْلُوم', passive:'مَجْهُول' },
+};
 function tenseVoiceLabel(){
-  const t = cfg.tense==='past' ? 'Vergangenheit' : 'Gegenwart';
-  const v = cfg.voice==='active' ? 'Aktiv' : 'Passiv';
+  const t = AR_LABEL.tense[curTense] + (cfg.tense==='random' ? ' 🎲' : '');
+  const v = AR_LABEL.voice[curVoice] + (cfg.voice==='random' ? ' 🎲' : '');
   return `${t} · ${v}`;
 }
 
@@ -727,19 +932,25 @@ function renderQuizCard(finished){
       <span class="badge">${cfg.order==='sequential'?'Stufe 1':'Stufe 2 · zufällig'}</span>
     </div>`;
 
+  const promptHtml = `
+    <div class="prompt">
+      <div class="who-line"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt}</span></div>
+      <div class="de-sentence">${deSentence(verb, curTense, curVoice, person)}</div>
+    </div>`;
+
   if(stage===0){
     panel.innerHTML = `
       ${badges}
-      <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+      ${promptHtml}
       <div class="answerzone">
         <button class="reveal-btn" id="btnReveal">Antwort zeigen</button>
       </div>`;
     $('#btnReveal').onclick = ()=>{ stage=2; render(); };
   } else {
-    const answer = conjugate(verb, cfg.tense, cfg.voice, person);
+    const answer = conjugate(verb, curTense, curVoice, person);
     panel.innerHTML = `
       ${badges}
-      <div class="prompt"><span class="who-ar ar">${pron.ar}</span><span class="who-de">${pron.num} Pers. ${pron.gen} ${pron.cnt} — ${pron.de}</span></div>
+      ${promptHtml}
       <div class="answerzone">
         <div class="answer-ar ar">${answer}</div>
         <div class="gradebtns">
