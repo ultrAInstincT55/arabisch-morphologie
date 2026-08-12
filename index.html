@@ -84,6 +84,19 @@
   .seg button.active{ background:linear-gradient(135deg, var(--gold-light), var(--gold)); color:var(--gold-text); box-shadow:0 4px 10px -4px rgba(150,110,20,.5); }
   .seg button:hover:not(.active){ color:var(--text); }
 
+  /* Einstellungen: Zeit/Modus-Dropdowns und Stufe-Umschalter auf volle Breite (wie die Bāb-Kacheln) */
+  #settingsPanel .row > select{ flex:1 1 0; min-width:0; }
+  #settingsPanel .row > .seg{ display:flex; flex:1 1 0; }
+  #settingsPanel .row > .seg button{ flex:1; }
+
+  .settings-header{ display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; margin:0 0 10px; }
+  .settings-header h2{ margin:0; }
+  .settings-header .chevron{ color:var(--gold); font-size:1rem; transition:transform .2s ease; }
+  #settingsPanel.collapsed .settings-header{ margin-bottom:0; }
+  #settingsPanel.collapsed .chevron{ transform:rotate(-90deg); }
+  .settings-body{ overflow:hidden; max-height:600px; opacity:1; transition:max-height .25s ease, opacity .2s ease; }
+  #settingsPanel.collapsed .settings-body{ max-height:0; opacity:0; }
+
 
   .babfilter{ display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; width:100%; }
   .babfilter label{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--tan); border:1px solid var(--border);
@@ -97,6 +110,7 @@
     font-family:inherit; padding:9px 11px; font-size:.85rem; max-width:100%;
   }
   .verbcard select{ background:rgba(245,234,204,.14); color:var(--dark-text); border-color:rgba(245,234,204,.25); }
+  select.ar-mixed{ font-family:'Noto Naskh Arabic','Poppins',sans-serif; font-size:.72rem; padding:9px 6px; text-overflow:ellipsis; }
   /* Die Dropdown-Liste selbst wird vom Betriebssystem gerendert (heller Hintergrund) -
      Optionen deshalb IMMER dunkel auf hell, unabhaengig vom (dunklen) Feld-Stil. */
   select option{ background:#FBF4E3; color:#332711; }
@@ -202,27 +216,32 @@
   </header>
 
   <div class="panel" id="settingsPanel">
-    <h2>Einstellungen</h2>
-    <div class="row">
-      <select id="tenseSelect" class="ar">
-        <option value="past">اَلْمَاضِي — Vergangenheit</option>
-        <option value="present">اَلْمُضَارِع — Gegenwart</option>
-        <option value="random">عَشْوَائِيّ — Zufällig (pro Verb)</option>
-      </select>
-      <select id="voiceSelect" class="ar">
-        <option value="active">مَعْلُوم — Aktiv</option>
-        <option value="passive">مَجْهُول — Passiv</option>
-        <option value="random">عَشْوَائِيّ — Zufällig (pro Verb)</option>
-      </select>
+    <div class="settings-header" id="settingsToggle">
+      <h2>Einstellungen</h2>
+      <span class="chevron" id="settingsChevron">▾</span>
     </div>
-    <div class="row">
-      <div class="seg" id="orderSeg">
-        <button data-val="sequential">Stufe 1 · تَرْتِيب</button>
-        <button data-val="random">Stufe 2 · عَشْوَائِيّ</button>
+    <div class="settings-body" id="settingsBody">
+      <div class="row">
+        <select id="tenseSelect" class="ar-mixed">
+          <option value="past">اَلْمَاضِي — Vergangenheit</option>
+          <option value="present">اَلْمُضَارِع — Gegenwart</option>
+          <option value="random">عَشْوَائِيّ — Zufällig</option>
+        </select>
+        <select id="voiceSelect" class="ar-mixed">
+          <option value="active">مَعْلُوم — Aktiv</option>
+          <option value="passive">مَجْهُول — Passiv</option>
+          <option value="random">عَشْوَائِيّ — Zufällig</option>
+        </select>
       </div>
-    </div>
-    <div class="row">
-      <div class="babfilter" id="babFilter"></div>
+      <div class="row">
+        <div class="seg" id="orderSeg">
+          <button data-val="sequential">Stufe 1 · تَرْتِيب</button>
+          <button data-val="random">Stufe 2 · عَشْوَائِيّ</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="babfilter" id="babFilter"></div>
+      </div>
     </div>
   </div>
 
@@ -237,7 +256,7 @@
 
   <div class="row navbar" style="margin-bottom:14px;">
     <button class="btn" id="btnPrevVerb">← Vorheriges</button>
-    <button class="btn" id="btnRandomVerb">🔀 Zufällig</button>
+    <button class="btn" id="btnRandomVerb">Zufällig</button>
     <button class="btn" id="btnNextVerb">Nächstes →</button>
   </div>
 
@@ -801,6 +820,8 @@ const $ = sel => document.querySelector(sel);
 function initStaticUI(){
   $('#tableWrap').innerHTML = buildConjugationTable();
 
+  $('#settingsToggle').onclick = ()=> $('#settingsPanel').classList.toggle('collapsed');
+
   // tense/voice (Dropdown, inkl. "Zufällig" - wird pro Verb neu ausgewürfelt)/order
   $('#tenseSelect').onchange = e=>{
     cfg.tense = e.target.value;
@@ -870,8 +891,8 @@ const AR_LABEL = {
   voice: { active:'مَعْلُوم', passive:'مَجْهُول' },
 };
 function tenseVoiceLabel(){
-  const t = AR_LABEL.tense[curTense] + (cfg.tense==='random' ? ' 🎲' : '');
-  const v = AR_LABEL.voice[curVoice] + (cfg.voice==='random' ? ' 🎲' : '');
+  const t = AR_LABEL.tense[curTense];
+  const v = AR_LABEL.voice[curVoice];
   return `${t} · ${v}`;
 }
 
@@ -909,8 +930,8 @@ function renderQuizCard(finished){
         <div class="score"><span class="ok">${ok}</span><span class="sep"> / </span>${sequence.length}</div>
         <div style="color:var(--text-dim); font-size:.85rem;">${ok} richtig · ${no} falsch — ${tenseVoiceLabel()}</div>
         <div class="summary-actions">
-          <button class="btn btn-ghost" id="btnRetrySame">🔁 Diese Hand wiederholen</button>
-          ${no>0?'<button class="btn btn-ghost" id="btnRetryWrong">✏️ Nur Fehler wiederholen</button>':''}
+          <button class="btn btn-ghost" id="btnRetrySame">Diese Hand wiederholen</button>
+          ${no>0?'<button class="btn btn-ghost" id="btnRetryWrong">Nur Fehler wiederholen</button>':''}
           <button class="btn btn-accent" id="btnGoNext">Nächstes Verb →</button>
         </div>
       </div>`;
