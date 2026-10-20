@@ -1,4 +1,4 @@
-const CACHE = 'arabisch-morphologie-v1';
+const CACHE = 'arabisch-morphologie-v2';
 const ASSETS = [
   './',
   './index.html',
