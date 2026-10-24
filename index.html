@@ -8,7 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#A67C3D">
+<meta name="theme-color" content="#4C4128">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Morphologie">
@@ -21,14 +21,26 @@
     --bg:#F0E4C4; --bg-blob:#DCE6B8;
     --card:#F8F0DC; --border:#E2D0A0;
     --text:#382C16; --text-dim:#8C7A50;
-    --dark:#A67C3D; --dark2:#8A6428; --dark-text:#FFF8E6;
+    --dark:#4C4128; --dark2:#2E2515; --dark-text:#FBF2DC;
     --tan:#DCC488; --tan2:#CDAD6C;
     --gold:#D2A84E; --gold-light:#E5C378; --gold-text:#3E2E10;
     --green:#7B9450; --green-bg:#E6EAD2; --green-text:#2A3316;
     --red:#C06238; --red-bg:#F6E3D3; --red-text:#4A2311;
     --shadow: 0 14px 34px -16px rgba(76,65,40,.3);
   }
-  /* Bewusst immer helle Palette (keine automatische Dunkelversion) */
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#211C10; --bg-blob:#2E2A16;
+      --card:#2A2415; --border:#413419;
+      --text:#F3E7CB; --text-dim:#B5A273;
+      --dark:#3A3018; --dark2:#1C1709; --dark-text:#F3E7CB;
+      --tan:#3C3117; --tan2:#4A3C1E;
+      --gold:#E0B968; --gold-light:#EFD08C; --gold-text:#2A1D08;
+      --green:#93AC69; --green-bg:#2C3820; --green-text:#E7EED6;
+      --red:#D47C52; --red-bg:#402A1C; --red-text:#F8E4D3;
+      --shadow: 0 14px 34px -16px rgba(0,0,0,.6);
+    }
+  }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -98,17 +110,6 @@
     font-family:inherit; padding:9px 11px; font-size:.85rem; max-width:100%;
   }
   .verbcard select{ background:rgba(245,234,204,.14); color:var(--dark-text); border-color:rgba(245,234,204,.25); }
-  .answer-form{ display:flex; flex-direction:column; gap:12px; align-items:center; width:100%; }
-  .answer-input{ width:100%; max-width:320px; font-size:1.7rem; text-align:center; padding:12px 14px; border-radius:16px;
-    border:2px solid var(--gold-light); background:rgba(255,248,230,.95); color:#3A2C14; font-family:'Noto Naskh Arabic',serif; outline:none; }
-  .answer-input:focus{ border-color:var(--gold-text); box-shadow:0 0 0 4px rgba(255,236,180,.35); }
-  .feedback{ font-size:1.9rem; font-weight:700; padding:6px 10px; border-radius:14px; }
-  .feedback.ok{ color:#2A3316; background:#DDE8BE; }
-  .feedback.no{ color:#7A2A10; background:#F8D8C4; text-decoration:line-through; text-decoration-thickness:2px; }
-  .feedback-label{ font-size:.9rem; font-weight:700; margin-top:6px; }
-  .feedback-label.ok{ color:#DFF2B0; }
-  .feedback-label.no{ color:#FFC9A8; }
-  .wrong-sol{ color:#FFD9C4 !important; font-size:1.7rem; font-weight:700; margin-top:4px; }
   select.ar-mixed{ font-family:'Noto Naskh Arabic','Poppins',sans-serif; font-size:.72rem; padding:9px 6px; text-overflow:ellipsis; }
   /* Die Dropdown-Liste selbst wird vom Betriebssystem gerendert (heller Hintergrund) -
      Optionen deshalb IMMER dunkel auf hell, unabhaengig vom (dunklen) Feld-Stil. */
@@ -158,8 +159,7 @@
   .conjtable td.cell{ background:var(--card); font-size:1.3rem; font-weight:600; padding:9px 1px; color:var(--text); transition:background .2s,color .2s; }
   .conjtable td.cell.current{ background:var(--gold-light); color:var(--gold-text); box-shadow:inset 0 0 0 2px var(--gold); }
   .conjtable td.cell.correct{ background:var(--green-bg); color:var(--green-text); }
-  .conjtable td.cell.incorrect{ background:var(--red-bg); color:var(--red-text); cursor:pointer; }
-  .table-hint{ text-align:center; font-size:.75rem; color:var(--text-dim); margin-top:8px; }
+  .conjtable td.cell.incorrect{ background:var(--red-bg); color:var(--red-text); }
   @media (max-width:480px){
     .conjtable td.cell{ font-size:1.02rem; padding:8px 1px; }
     .conjtable thead th{ font-size:.66rem; padding:5px 1px; }
@@ -741,8 +741,7 @@ function buildConjugationTable(){
         ${cell('3ms')}${cell('3fs')}${cell('2ms')}${cell('2fs')}${cell('1s')}
       </tr>
     </tbody>
-  </table>
-  <div class="table-hint">Tippe auf ein rotes Feld, um den Fehler zu entfernen.</div>`;
+  </table>`;
 }
 
 /* =========================================================
@@ -758,8 +757,7 @@ let verb = null;
 let sequence = [];           // Personen-Reihenfolge für aktuelles Verb
 let posIdx = 0;
 let results = {};            // person -> 'correct' | 'incorrect'
-let stage = 0;                // 0=Eingabe, 1=Rückmeldung wird gezeigt
-let lastFeedback = null;      // { ok, answer, typed } für die Rückmeldung
+let stage = 0;                // 0=Frage, 2=Antwort gezeigt
 
 function shuffle(arr){
   const a=[...arr];
@@ -779,8 +777,6 @@ function resolveModes(){
 }
 
 function startVerb(v){
-  clearTimeout(feedbackTimer); feedbackTimer = null;
-  lastFeedback = null;
   verb = v;
   poolIdx = pool.indexOf(v);
   results = {};
@@ -793,28 +789,12 @@ function startVerb(v){
 
 function currentPerson(){ return sequence[posIdx]; }
 
-let feedbackTimer = null;
-
-// Eingabe prüfen: Ergebnis sofort im Dialog zeigen, bei falsch die Lösung in Rot,
-// danach geht das Gespräch automatisch mit der nächsten Person weiter.
-function submitAnswer(typed){
-  if(stage!==0) return;
-  const person = currentPerson();
-  const answer = conjugate(verb, curTense, curVoice, person);
-  const norm = s => stripAllDiacritics(s).replace(/\s+/g,'');
-  const ok = norm(typed) === norm(answer);
-  results[person] = ok ? 'correct' : 'incorrect';
-  session[ok?'correct':'incorrect']++;
-  stage = 1;
-  lastFeedback = { ok, answer, typed };
-  render();
-  feedbackTimer = setTimeout(nextQuestion, ok ? 1400 : 3000);
-}
-
-function nextQuestion(){
-  clearTimeout(feedbackTimer); feedbackTimer = null;
+function grade(isCorrect){
+  const p = currentPerson();
+  results[p] = isCorrect ? 'correct' : 'incorrect';
+  session[isCorrect?'correct':'incorrect']++;
   if(posIdx < sequence.length-1){
-    posIdx++; stage=0; lastFeedback=null;
+    posIdx++; stage=0;
     render();
   } else {
     render(true); // Zusammenfassung
@@ -841,18 +821,6 @@ function initStaticUI(){
   $('#tableWrap').innerHTML = buildConjugationTable();
 
   $('#settingsToggle').onclick = ()=> $('#settingsPanel').classList.toggle('collapsed');
-
-  // Fehler wieder entfernen: auf ein rotes Feld tippen (zählt nicht mehr als Fehler)
-  $('#tableWrap').addEventListener('click', e=>{
-    const c = e.target.closest('td.cell');
-    if(!c || !verb) return;
-    const p = c.dataset.person;
-    if(results[p] !== 'incorrect') return;
-    if(stage===1 && p===currentPerson()) return; // gerade laufende Rückmeldung nicht stören
-    delete results[p];
-    session.incorrect = Math.max(0, session.incorrect-1);
-    render();
-  });
 
   // tense/voice (Dropdown, inkl. "Zufällig" - wird pro Verb neu ausgewürfelt)/order
   $('#tenseSelect').onchange = e=>{
@@ -995,28 +963,24 @@ function renderQuizCard(finished){
     panel.innerHTML = `
       ${badges}
       ${promptHtml}
-      <form class="answerzone" id="answerForm" autocomplete="off">
-        <input id="answerInput" class="answer-input ar" dir="rtl" lang="ar" type="text"
-               inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="اكتب الجواب">
-        <button class="reveal-btn" type="submit">Prüfen</button>
-      </form>`;
-    $('#answerForm').onsubmit = e=>{
-      e.preventDefault();
-      const v = $('#answerInput').value.trim();
-      if(v) submitAnswer(v);
-    };
+      <div class="answerzone">
+        <button class="reveal-btn" id="btnReveal">Antwort zeigen</button>
+      </div>`;
+    $('#btnReveal').onclick = ()=>{ stage=2; render(); };
   } else {
-    const { ok, answer, typed } = lastFeedback;
+    const answer = conjugate(verb, curTense, curVoice, person);
     panel.innerHTML = `
       ${badges}
       ${promptHtml}
       <div class="answerzone">
-        ${ok
-          ? `<div class="feedback ok ar">${typed}</div><div class="feedback-label ok">Richtig</div>`
-          : `<div class="feedback no ar">${typed}</div><div class="feedback-label no">Falsch – richtig wäre:</div><div class="answer-ar ar wrong-sol">${answer}</div>`}
-        <button class="reveal-btn" id="btnNext">Weiter</button>
+        <div class="answer-ar ar">${answer}</div>
+        <div class="gradebtns">
+          <button class="gradebtn no" id="btnNo">✗ Falsch</button>
+          <button class="gradebtn ok" id="btnOk">✓ Richtig</button>
+        </div>
       </div>`;
-    $('#btnNext').onclick = nextQuestion;
+    $('#btnOk').onclick = ()=>grade(true);
+    $('#btnNo').onclick = ()=>grade(false);
   }
 }
 
@@ -1037,11 +1001,14 @@ function render(finished){
 /* =========================================================
    7) INIT
 ========================================================= */
-// Enter auf der Rückmeldung springt direkt weiter (beim Tippen übernimmt das Formular)
 document.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && !(e.target instanceof HTMLInputElement)){
-    const next = document.getElementById('btnNext');
-    if(next){ e.preventDefault(); next.click(); }
+  if(e.code==='Space' || e.code==='Enter'){
+    const revealBtn = document.querySelector('.reveal-btn');
+    if(revealBtn){ e.preventDefault(); revealBtn.click(); }
+  } else if(e.key.toLowerCase()==='r'){
+    const b = document.getElementById('btnOk'); if(b) b.click();
+  } else if(e.key.toLowerCase()==='f'){
+    const b = document.getElementById('btnNo'); if(b) b.click();
   }
 });
 
